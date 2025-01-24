@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        nav a {
+            color: white;
+            padding: 1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        nav a:hover {
+            background-color: #575757;
+        }
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 0 auto;
+        }
+        .tools {
+            margin: 1rem;
+            text-align: center;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Drawing Website</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="#draw">Draw</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <main>
+        <section id="draw">
+            <h2>Draw</h2>
+            <p>Use the canvas below to draw anything you like!</p>
+            <div class="tools">
+                <button onclick="setTool('pen')">Pen</button>
+                <button onclick="setTool('eraser')">Eraser</button>
+                <label for="colorPicker">Color:</label>
+                <input type="color" id="colorPicker" value="#000000" onchange="setColor(this.value)">
+                <label for="lineWidth">Line Width:</label>
+                <input type="number" id="lineWidth" value="5" min="1" max="50" onchange="setLineWidth(this.value)">
+            </div>
+            <canvas id="drawingCanvas" width="800" height="500"></canvas>
+            <button onclick="clearCanvas()">Clear Canvas</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Drawing Website. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let tool = 'pen';
+        let color = '#000000';
+        let lineWidth = 5;
+
+        canvas.addEventListener('mousedown', () => { drawing = true; });
+        canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+
+            if (tool === 'pen') {
+                ctx.strokeStyle = color;
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (tool === 'eraser') {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = lineWidth * 2;
+            }
+
+            ctx.lineTo(event.offsetX, event.offsetY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.offsetX, event.offsetY);
+        }
+
+        function setTool(selectedTool) {
+            tool = selectedTool;
+        }
+
+        function setColor(selectedColor) {
+            color = selectedColor;
+        }
+
+        function setLineWidth(selectedLineWidth) {
+            lineWidth = selectedLineWidth;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
